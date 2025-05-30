@@ -55,7 +55,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
         (let* ((end (match-end 0)) ; salva subito la fine del match
                (text (match-string 1))
                (label (format "%d" my-sidenote-counter))
-               (marker (format "§N:%s§" label))
+               (marker (format "§N:%d§" my-sidenote-counter))
                (html (org-export-string-as text 'html t)))
           (puthash marker
                    (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
