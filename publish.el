@@ -57,6 +57,24 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
                   (setq my-sidenote-counter (1+ my-sidenote-counter))))))
           map)))
 
+(defun my-org-tufte-collect-sidenotes (backend)
+  "Salva il contenuto delle footnote inline o standard in `my-sidenote-map`."
+  (when (eq backend 'html)
+    (setq my-sidenote-map (make-hash-table :test 'equal))
+    (with-temp-buffer
+      (insert (buffer-string))
+      (goto-char (point-min))
+      ;; Inline footnotes: [fn::Testo...]
+      (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
+        (puthash (format "sn-%d" my-sidenote-counter) (match-string 1) my-sidenote-map)
+        (setq my-sidenote-counter (1+ my-sidenote-counter)))
+      ;; Standard footnotes: [fn:label:Testo...]
+      (goto-char (point-min))
+      (while (re-search-forward "\\[fn:\\([^]:]+\\):\\(.*?\\)\\]" nil t)
+        (puthash (format "sn-%s" (match-string 1)) (match-string 2)
+                 my-sidenote-map)))))
+
+
 (defun my-org-tufte-sidenote-html-filter (html backend info)
   "Sostituisce l'HTML di note inline con markup Tufte."
   (when (eq backend 'html)
