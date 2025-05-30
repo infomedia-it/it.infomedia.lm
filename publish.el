@@ -70,7 +70,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
       ;; Fai lo stesso per le note standard
           (save-excursion
             (goto-char (point-min))
-            (while (re-search-forward "\\[fn:\\([^:]]+\\): *\\(.*\\)\\]" nil t)
+            (while (re-search-forward "\\[fn:\\([a-zA-Z0-9]]+\\): *\\(.*\\)\\]" nil t)
               (let* ((label (match-string 1))
                      (text (match-string 2))
                      (marker (format "§N:%s§" label))
