@@ -46,7 +46,6 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
 Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
   (when (eq backend 'html)
-    (setq my-sidenote-map (make-hash-table :test 'equal))
     (setq my-sidenote-counter 1)
     (save-excursion
       ;; Inline footnotes: [fn::Testo...]
