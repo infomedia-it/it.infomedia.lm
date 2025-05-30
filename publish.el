@@ -70,18 +70,18 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
       ;; Fai lo stesso per le note standard
           (save-excursion
             (goto-char (point-min))
-            (while (re-search-forward "\\[fn:\\([^]]+\\): *\\(.*\\)\\]" nil t)
+            (while (re-search-forward "\\[fn:\\([^:]]+\\): *\\(.*\\)\\]" nil t)
               (let* ((label (match-string 1))
-               (text (match-string 2))
-               (marker (format "§N:%s§" label))
-               (html (string-trim+ (org-export-string-as text 'html t)))
-               (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
+                     (text (match-string 2))
+                     (marker (format "§N:%s§" label))
+                     (html (string-trim+ (org-export-string-as text 'html t)))
+                     (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
                 (puthash marker value my-sidenote-map)
                 (setq my-sidenote-counter (1+ my-sidenote-counter))
                 (message (format "%s ::: %s" marker value)))))
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward "^\\[fn:\\([^]]+\\)\\] *\\(.*\\)$" nil t)
+      (while (re-search-forward "^\\[fn:\\([^:]]+\\)\\] *\\(.*\\)$" nil t)
         (let* ((label (match-string 1))
                (text (match-string 2))
                (marker (format "§N:%s§" label))
@@ -106,6 +106,8 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
          (if text text id))) ;; fallback se label non trovata
      html)))
 
+
+(defun org-html-footnote-section (_info) "")
 
 (add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
 
