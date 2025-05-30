@@ -113,5 +113,5 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
           (lambda (backend)
             (when (eq backend 'html)  ; oppure 'latex, ecc.
               (goto-char (point-min))
-              (while (search-forward "calce" nil t)
-                (replace-match "mattone" nil t))))
+              (while (search-forward "etichetta" nil t)
+                (replace-match "mattone" nil t)))))
