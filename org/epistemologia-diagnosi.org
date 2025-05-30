@@ -1,5 +1,5 @@
 #+TITLE: Epistemologia della diagnosi
-#+AUTHOR: Emmanuele Somma
+#+AUTHOR: LoginMed
 #+OPTIONS: toc:nil num:nil html-style:nil
 #+HTML_HEAD: <link rel="stylesheet" href="../css/tufte.css" />
 

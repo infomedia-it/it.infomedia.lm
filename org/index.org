@@ -1,11 +1,12 @@
-#+TITLE: Filosofia della Medicina
-#+AUTHOR: Emmanuele Somma
+#+TITLE:  Login Med - 
+#+AUTHOR: LoginMed
 #+LANGUAGE: it
 #+OPTIONS: toc:nil num:nil html-style:nil
 #+HTML_HEAD: <link rel="stylesheet" href="../css/tufte.css" />
 #+HTML_HEAD_EXTRA: <meta charset="utf-8" />
 
-Benvenuti nel progetto *Filosofia della Medicina*.
+Benvenuti nel progetto di *Epistemologia delle Scienze e delle
+Ideologie Mediche*.
 
 Questo sito ospita articoli di riflessione epistemologica e filosofica sulla pratica clinica, la medicina e la tecnologia.
 
