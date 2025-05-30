@@ -39,17 +39,21 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
 
-(defun my-org-tufte-sidenote-filter (transcoded backend info)
+(defun my-org-tufte-sidenote-filter (footnote backend info)
   "Filtro Org Export per trasformare note inline in sidenotes Tufte.
 Si applica solo all'export HTML. `transcoded` è il markup standard già generato."
   (when (and (eq backend 'html)
-             (string-match-p "<sup.*</sup>" transcoded))
-    (let* ((label (format "sn-%d" my-sidenote-counter))
+             (org-element-property :type footnote)
+              (eq (org-element-property :type footnote) 'inline))
+    (let* ((label (or (org-element-property :label footnote)
+                      (format "sn-%d" my-sidenote-counter)))
+              (id (format "sn-%s" label))
+           ;; Estrae il contenuto della nota (lista di oggetti Org)
+           (contents (org-export-data (org-element-contents footnote) info))
            (html (format "
 <label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>"
-                         label label transcoded)))
+<span class=\"sidenote\">%s</span>" id id contents)))
       (setq my-sidenote-counter (1+ my-sidenote-counter))
       html)))
 
