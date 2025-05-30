@@ -4,6 +4,8 @@
 #+HTML_HEAD: <link rel="stylesheet" href="css/tufte.css" />
 
 
+E questo fa riferimento a una nota[fn:ricovero].
+
 Questo è un testo con una nota a margine Perfetto, allora il sito è
 online su lm.infomedia.it — ottimo risultato. Ora dobbiamo far
 funzionare le note a margine (sidenotes) nello stile Tufte. Questo
@@ -15,6 +17,6 @@ Questo è un caso classico[fn::Nota a margine].
 
 Questo è un caso con etichetta[fn:epistemo:Nota sulla diagnosi].
 
-E questo fa riferimento a una nota[fn:ricovero].
+
 
 [fn:ricovero] Nota definita in calce.

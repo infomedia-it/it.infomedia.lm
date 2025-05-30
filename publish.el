@@ -66,12 +66,12 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
       (goto-char (point-min))
       ;; Inline footnotes: [fn::Testo...]
       (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
-        (puthash (format "sn-%d" my-sidenote-counter) (match-string 1) my-sidenote-map)
+        (puthash (format "%d" my-sidenote-counter) (match-string 1) my-sidenote-map)
         (setq my-sidenote-counter (1+ my-sidenote-counter)))
       ;; Standard footnotes: [fn:label:Testo...]
       (goto-char (point-min))
       (while (re-search-forward "\\[fn:\\([^]:]+\\):\\(.*?\\)\\]" nil t)
-        (puthash (format "sn-%s" (match-string 1)) (match-string 2)
+        (puthash (format "%s" (match-string 1)) (match-string 2)
                  my-sidenote-map)))))
 
 
