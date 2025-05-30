@@ -14,7 +14,6 @@
          :html-html5-fancy t
          :html-doctype "html5")))
 
-(org-publish-all t)
 
 (defun it.infomedia.lm-publish (do-push)
   "Esegue org-publish e make publish.
@@ -37,29 +36,54 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
       (message "✅ Pubblicazione completata."))))
 
 
-(defvar-local my-sidenote-counter 1)
+(defvar my-sidenote-counter 1
+  "Contatore globale per le sidenote.")
 
-(defun my-org-tufte-sidenote-id (footnote)
-  "Return a unique sidenote ID based on FOOTNOTE object."
-  (cond
-   ;; Etichetta presente
-   ((and (listp footnote)
-         (stringp (car footnote)))
-    (format "sn-%s" (car footnote)))
-   ;; Inline o anonima
-   (t
-    (let ((n my-sidenote-counter))
-      (setq my-sidenote-counter (1+ n))
-      (format "sn-%d" n)))))
 
 (defun my-org-tufte-sidenote-content (footnote info)
-  "Return the HTML content of the sidenote."
+  "Esporta il contenuto della sidenote da un footnote OrgMode."
   (cond
-   ;; Footnote inline semplice (stringa)
+   ;; Footnote inline: [fn:: ...]
    ((stringp footnote)
     (org-export-string-as footnote 'html t))
-   ;; Etichettata inline (forma [fn:label:contenuto])
+   ;; Footnote [fn:label: ...] → cdr è stringa
    ((and (listp footnote)
-         (car footnote)           ; label
-         (stringp (cdr footnote))) ; contenuto inline
-    (org-expor
+         (stringp (cdr footnote)))
+    (org-export-string-as (cdr footnote) 'html t))
+   ;; Footnote [fn:label] → cdr è un elemento Org (AST)
+   ((and (listp footnote)
+         (consp (cdr footnote)))
+    (condition-case nil
+        (org-export-data (cdr footnote) info)
+      (error (format "<!-- ERRORE: %S -->" (cdr footnote)))))
+   (t
+    (format "<!-- nota non riconosciuta: %S -->" footnote))))
+
+(defun my-org-tufte-sidenote (footnote info)
+  "Restituisce il markup HTML per una nota a margine Tufte."
+  (let* ((label (or (and (listp footnote) (car footnote))
+                    (format "sn-%d" my-sidenote-counter)))
+         (id (format "sn-%s" label))
+         (html (my-org-tufte-sidenote-content footnote info)))
+    (setq my-sidenote-counter (1+ my-sidenote-counter))
+    (format
+     "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
+<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
+<span class=\"sidenote\">%s</span>" id id html)))
+
+(defun my-org-html-footnote-reference (footnote contents info)
+  "Override per generare sidenote Tufte invece di note classiche."
+  (if (or (stringp footnote)
+          (and (listp footnote)
+               (or (cdr footnote)
+                   (and (stringp (cdr footnote))))))
+      (my-org-tufte-sidenote footnote info)
+    (org-html-format-footnote-reference footnote info)))
+
+(defun my-disable-html-footnote-section (_info)
+  "Rimuove la sezione delle note a piè di pagina."
+  "")
+
+(advice-add 'org-html-footnote-reference :override #'my-org-html-footnote-reference)
+(advice-add 'org-html-footnote-section :override #'my-disable-html-footnote-section)
+
