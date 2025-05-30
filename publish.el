@@ -67,12 +67,15 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
               (id (format "sn-%s" label))
               (text (gethash id my-sidenote-map)))
          (if text
-             (format "
+             (let ((html-text (org-export-string-as text 'html t)))
+               (format "
 <label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" id id text)
+<span class=\"sidenote\">%s</span>" id id html-text))
            match))) ;; fallback se label non trovata
      html)))
+
+(defun org-html-footnote-section (_info) "")
 
 (add-hook 'org-export-before-processing-functions #'my-org-collect-sidenotes)
 (add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-sidenote-html-filter)
