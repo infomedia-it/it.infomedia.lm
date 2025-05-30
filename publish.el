@@ -79,60 +79,6 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
           ;; Elimina la definizione nel testo
           )))))
 
-(defun asmy-org-tufte-preprocess-sidenotes (backend)
-  "Sostituisce le footnote Org con marker §N:label§ e salva il contenuto in `my-sidenote-map`."
-  (when (eq backend 'html)
-    (setq my-sidenote-map (make-hash-table :test 'equal))
-    (setq my-sidenote-counter 1)
-
-    (goto-char (point-min))
-    ;; Inline: [fn::Testo]
-    (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
-      (let* ((label (format "n%d" my-sidenote-counter))
-             (marker (format "§N:%s§" label))
-             (text (match-string 1))
-             (html (org-export-string-as text 'html t)))
-        (message (format "POS %d" (point)))
-        (puthash marker
-                 (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
-<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" label label html)
-                 my-sidenote-map)
-        (replace-match marker t t)
-        (goto-char (match-end 0))
-        (setq my-sidenote-counter (1+ my-sidenote-counter))))
-
-    ;; Standard: [fn:label: Testo]
-    (goto-char (point-min))
-    (while (re-search-forward "\\[fn:\\([^]:]+\\):\\(.*?\\)\\]" nil t)
-      (let* ((label (match-string 1))
-             (text (match-string 2))
-             (marker (format "§N:%s§" label))
-             (html (org-export-string-as text 'html t)))
-        (puthash marker
-                 (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
-<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" label label html)
-                 my-sidenote-map)
-        (replace-match marker t t)
-        (goto-char (match-end 0))))
-
-    ;; Rimozione definizioni [fn:label] ... a capo
-    (goto-char (point-min))
-    (while (re-search-forward "^\\[fn:\\([^]]+\\)\\][ \t]+" nil t)
-      (let* ((label (match-string 1))
-             (marker (format "§N:%s§" label))
-             (beg (match-beginning 0)))
-        (forward-paragraph)
-        (let* ((text (buffer-substring-no-properties beg (point)))
-               (html (org-export-string-as text 'html t)))
-          (puthash marker
-                   (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
-<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" label label html)
-                   my-sidenote-map)
-          (delete-region beg (point)))))))
-
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce tutti i marker §N:label§ con sidenote HTML Tufte."
   (when (eq backend 'html)
@@ -141,7 +87,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
      "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
      (lambda (match)
        (let* ((label (match-string 1 match))
-              (id (format "%s" label))
+              (id (format "§N:%s§" label))
               (text (gethash label my-sidenote-map)))
          (if text
              (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" id id text)
