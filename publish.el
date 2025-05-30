@@ -54,12 +54,10 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
                (text (match-string 1))
                (label (format "%d" my-sidenote-counter))
                (marker (format "§N:%d§" my-sidenote-counter))
-               (html (org-export-string-as text 'html t)))
-          (puthash marker
-                   (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
-<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" label label html)
-                   my-sidenote-map)
+               (html (org-export-string-as text 'html t))
+               (value (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
+          (puthash marker value my-sidenote-map)
+          (message (format "%s ::: %s" marker value)
           (setq my-sidenote-counter (1+ my-sidenote-counter)))))
     ;; Fai lo stesso per le note standard
     (save-excursion
@@ -68,12 +66,10 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
         (let* ((label (match-string 1))
                (text (match-string 2))
                (marker (format "§N:%s§" label))
-               (html (org-export-string-as text 'html t)))
-          (puthash marker
-                   (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
-<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" label label html)
-                   my-sidenote-map)
+               (html (org-export-string-as text 'html t))
+               (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
+          (puthash marker value my-sidenote-map)
+          (message (format "%s ::: %s" marker value)
           ;; Elimina la definizione nel testo
           )))))
 
