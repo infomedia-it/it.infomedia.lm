@@ -54,7 +54,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
       (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
         (let* ((end (match-end 0)) ; salva subito la fine del match
                (text (match-string 1))
-               (label (format "n%d" my-sidenote-counter))
+               (label (format "%d" my-sidenote-counter))
                (marker (format "§N:%s§" label))
                (html (org-export-string-as text 'html t)))
           (puthash marker
