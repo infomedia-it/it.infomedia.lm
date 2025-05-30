@@ -153,7 +153,5 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
 
+;(setq org-export-filter-final-output-functions nil)
 
-(setq org-export-filter-final-output-functions nil)
-
-(setq org-export-filter-final-output-functions nil)
