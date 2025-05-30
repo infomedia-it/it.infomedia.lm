@@ -42,61 +42,54 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 ;; (defvar my-sidenote-map nil)
 (defvar my-sidenote-map (make-hash-table :test 'equal))
 
-(defun my-org-collect-sidenotes-old (_backend)
-  "Crea una mappa delle sidenotes inline prima dell'export."
-  (setq my-sidenote-counter 1)
-  (setq my-sidenote-map
-        (let ((map (make-hash-table :test 'equal)))
-          (org-element-map (org-element-parse-buffer) 'footnote-reference
-            (lambda (fn)
-              (when (eq (org-element-property :type fn) 'inline)
-                (let* ((label (or (org-element-property :label fn)
-                                  (format "%d" my-sidenote-counter)))
-                       (contents (org-element-interpret-data (org-element-contents fn))))
-                  (puthash label contents map)
-                  (setq my-sidenote-counter (1+ my-sidenote-counter))))))
-          map)))
 
-(defun my-org-tufte-collect-sidenotes (backend)
-  "Salva il contenuto delle footnote inline o standard in `my-sidenote-map`."
+(defun my-org-tufte-remove-footnote-block (backend)
+  "Elimina le footnote standard alla fine dell’articolo."
   (when (eq backend 'html)
-    (setq my-sidenote-map (make-hash-table :test 'equal))
-    (with-temp-buffer
-      (insert (buffer-string))
-      (goto-char (point-min))
-      ;; Inline footnotes: [fn::Testo...]
-      (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
-        (puthash (format "fnr.%d" my-sidenote-counter) (match-string 1) my-sidenote-map)
-        (setq my-sidenote-counter (1+ my-sidenote-counter)))
-      ;; Standard footnotes: [fn:label:Testo...]
-      (goto-char (point-min))
-      (while (re-search-forward "\\[fn:\\([^]:]+\\):\\(.*?\\)\\]" nil t)
-        (puthash (format "fnr.%s" (match-string 1)) (match-string 2)
-                 my-sidenote-map)))))
+    (org-element-map data 'footnote-definition
+      (lambda (fn) (org-element-extract-element fn))))
+  data)
 
+(defun my-org-tufte-collect-footnotes (backend)
+  "Cattura le definizioni delle footnote in `my-sidenote-map` durante l'export Org → HTML."
+  (when (eq backend 'html)
+    (setq my-sidenote-map (make-hash-table :test 'equal)
+          my-sidenote-counter 1)
+    (org-element-map data 'footnote-definition
+      (lambda (fn)
+        (let* ((label (org-element-property :label fn))
+               (contents (org-export-data (org-element-contents fn) info))
+               (id (format "sn-%s" label)))
+          (puthash id contents my-sidenote-map)))
+      info))
+  data)
 
 (defun my-org-tufte-sidenote-html-filter (html backend info)
-  "Sostituisce l'HTML di note inline con markup Tufte."
+  "Sostituisce le note inline HTML con markup Tufte CSS."
   (when (eq backend 'html)
-    (replace-regexp-in-string
-     ;; Regex che trova footnote HTML standard con id "fnr.LABEL"
-     "<sup><a id=\"fnr\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
-     (lambda (match)
-       (when (string-match
-              "<sup><a[^>]+id=\"fnr\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
-              match)
-       (let* ((label (match-string 1 match))
-              (id (format "%s" label))
-              (text (gethash id my-sidenote-map)))
-         (if text
-             (let ((html-text (org-export-string-as text 'html t)))
-               (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
+    (let ((pos 0)
+          (result "")
+          (pattern "<sup><a\\([^>]+\\)id=\"fnr\\.\\([^\"]+\\)\"\\([^>]*\\)>\\([^<]*\\)</a></sup>"))
+      (while (string-match pattern html pos)
+        (let* ((start (match-beginning 0))
+               (end (match-end 0))
+               (label (match-string 2 html))
+               (id (format "sn-%s" label))
+               (text (gethash id my-sidenote-map))
+               (html-text (and text (org-export-string-as text 'html t))))
+          (setq result
+                (concat result
+                        (substring html pos start)
+                        (if html-text
+                            (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
-<span class=\"sidenote\">%s</span>" id id html-text))
-           match)))) ;; fallback se label non trovata
-     html)))
+<span class=\"sidenote\">%s</span>" id id html-text)
+                          (substring html start end))))
+          (setq pos end)))
+      (concat result (substring html pos)))))
 
-(defun org-html-footnote-section (_info) "")
 
-(add-hook 'org-export-before-processing-functions #'my-org-collect-sidenotes)
-(add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-sidenote-html-filter)
+(add-hook 'org-export-before-processing-functions #'my-org-tufte-collect-footnotes)
+(add-hook 'org-export-filter-final-output-functions #'my-org-tufte-sidenote-html-filter)
+(add-hook 'org-export-before-processing-functions #'my-org-tufte-remove-footnote-block)
+
