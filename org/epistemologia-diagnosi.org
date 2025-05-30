@@ -3,11 +3,12 @@
 #+OPTIONS: toc:nil num:nil html-style:nil
 #+HTML_HEAD: <link rel="stylesheet" href="css/tufte.css" />
 
-La diagnosi è un atto epistemico[fn::La diagnosi implica inferenze non deduttive, come l’abduzione medica.]
 
-Il dato clinico non è neutro[fn::Ian Hacking parla di “making up people” nella costruzione delle categorie diagnostiche.].
-
-Questo è un testo con una nota a margine:
+Questo è un testo con una nota a margine Perfetto, allora il sito è
+online su lm.infomedia.it — ottimo risultato. Ora dobbiamo far
+funzionare le note a margine (sidenotes) nello stile Tufte. Questo
+dipende non solo dal CSS, ma anche dalla struttura HTML generata da
+org-html-export.
 #+BEGIN_EXPORT html
 <label for="sn-1" class="sidenote-number">1</label>
 <input type="checkbox" id="sn-1" class="margin-toggle">
