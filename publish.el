@@ -80,10 +80,10 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   (when (eq backend 'html)
     (replace-regexp-in-string
      ;; Regex che trova footnote HTML standard con id "fnr.LABEL"
-     "<sup><a \\([^>]*\\)id=\"fnr\\.\\([^\"]+\\)\"\\([^>]*\\)>[^<]*</a></sup>"
+     "<sup><a \\([^>]*\\)id=\"fnr[\\.:]\\([^\"]+\\)\"\\([^>]*\\)>[^<]*</a></sup>"
      (lambda (match)
        (when (string-match
-              "<sup><a \\([^>]*\\)id=\"fnr\\.\\([^\"]+\\)\"\\([^>]*\\)>[^<]*</a></sup>"
+              "<sup><a \\([^>]*\\)id=\"fnr[\\.:]\\([^\"]+\\)\"\\([^>]*\\)>[^<]*</a></sup>"
               match)
        (let* ((label (match-string 1 match))
               (id (format "%s" label))
