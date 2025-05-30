@@ -74,7 +74,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
         (let* ((label (match-string 1))
                (text (match-string 2))
                (marker (format "§N:%s§" label))
-               (html (org-export-string-as (string-trim+ text) 'html t))
+               (html (string-trim+ (org-export-string-as text 'html t)))
                (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
           (puthash marker value my-sidenote-map)
           (message (format "%s ::: %s" marker value)))
