@@ -141,7 +141,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
      "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
      (lambda (match)
        (let* ((label (match-string 1 match))
-              (id (format "sn-%s" label))
+              (id (format "%s" label))
               (text (gethash label my-sidenote-map)))
          (if text
              (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" id id text)
