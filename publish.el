@@ -82,16 +82,18 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
      ;; Regex che trova footnote HTML standard con id "fnr.LABEL"
      "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
      (lambda (match)
+       (when (string-match
+              "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
+              match)
        (let* ((label (match-string 1 match))
-              (id (format "sn-%s" label))
+              (id (format "%s" label))
               (text (gethash id my-sidenote-map)))
          (if text
              (let ((html-text (org-export-string-as text 'html t)))
-               (format "
-<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
+               (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
 <span class=\"sidenote\">%s</span>" id id html-text))
-           match))) ;; fallback se label non trovata
+           match)))) ;; fallback se label non trovata
      html)))
 
 (defun org-html-footnote-section (_info) "")
