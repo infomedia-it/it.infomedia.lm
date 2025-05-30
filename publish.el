@@ -89,7 +89,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
        (let* ((label (match-string 1 match))
               (id (format "§N:%s§" label))
               (text (gethash id my-sidenote-map)))
-         (if text text match))) ;; fallback se label non trovata
+         (if text text id))) ;; fallback se label non trovata
      html)))
 
 
