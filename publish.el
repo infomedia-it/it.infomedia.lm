@@ -42,7 +42,46 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 ;; (defvar my-sidenote-map nil)
 (defvar my-sidenote-map (make-hash-table :test 'equal))
 
-(defun my-org-tufte-preprocess-sidenotes (backend)
+(defun my-tufte-preprocess-sidenotes (backend)
+  "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
+Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
+  (when (eq backend 'html)
+    (setq my-sidenote-map (make-hash-table :test 'equal))
+    (setq my-sidenote-counter 1)
+    (save-excursion
+      ;; Inline footnotes: [fn::Testo...]
+      (goto-char (point-min))
+      (while (re-search-forward "\\[fn::\\(.*?\\)\\]" nil t)
+        (let* ((end (match-end 0)) ; salva subito la fine del match
+               (text (match-string 1))
+               (label (format "n%d" my-sidenote-counter))
+               (marker (format "§N:%s§" label))
+               (html (org-export-string-as text 'html t)))
+          (puthash marker
+                   (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
+<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
+<span class=\"sidenote\">%s</span>" label label html)
+                   my-sidenote-map)
+          (replace-match marker t t)
+          (goto-char end) ; sposta il punto oltre il match originale
+          (setq my-sidenote-counter (1+ my-sidenote-counter)))))
+    ;; Fai lo stesso per le note standard
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^\\[fn:\\([^]]+\\)\\] *\\(.*\\)$" nil t)
+        (let* ((label (match-string 1))
+               (text (match-string 2))
+               (marker (format "§N:%s§" label))
+               (html (org-export-string-as text 'html t)))
+          (puthash marker
+                   (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
+<input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
+<span class=\"sidenote\">%s</span>" label label html)
+                   my-sidenote-map)
+          ;; Elimina la definizione nel testo
+          (replace-match "" t t))))))
+
+(defun asmy-org-tufte-preprocess-sidenotes (backend)
   "Sostituisce le footnote Org con marker §N:label§ e salva il contenuto in `my-sidenote-map`."
   (when (eq backend 'html)
     (setq my-sidenote-map (make-hash-table :test 'equal))
@@ -55,12 +94,14 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
              (marker (format "§N:%s§" label))
              (text (match-string 1))
              (html (org-export-string-as text 'html t)))
+        (message (format "POS %d" (point)))
         (puthash marker
                  (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
 <span class=\"sidenote\">%s</span>" label label html)
                  my-sidenote-map)
         (replace-match marker t t)
+        (goto-char (match-end 0))
         (setq my-sidenote-counter (1+ my-sidenote-counter))))
 
     ;; Standard: [fn:label: Testo]
@@ -75,7 +116,8 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
 <span class=\"sidenote\">%s</span>" label label html)
                  my-sidenote-map)
-        (replace-match marker t t)))
+        (replace-match marker t t)
+        (goto-char (match-end 0))))
 
     ;; Rimozione definizioni [fn:label] ... a capo
     (goto-char (point-min))
@@ -106,4 +148,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 
 
 (add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
+
 (add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
+
+(setq org-export-filter-final-output-functions nil)
