@@ -65,7 +65,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
      (lambda (match)
        (let* ((label (match-string 1 match))
               (id (format "sn-%s" label))
-              (text (gethash label my-sidenote-map)))
+              (text (gethash id my-sidenote-map)))
          (if text
              (format "
 <label for=\"%s\" class=\"margin-toggle sidenote-number\"></label>
