@@ -42,7 +42,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 ;; (defvar my-sidenote-map nil)
 (defvar my-sidenote-map (make-hash-table :test 'equal))
 
-(defun my-tufte-preprocess-sidenotes (backend)
+(defun my-org-tufte-preprocess-sidenotes (backend)
   "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
 Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
   (when (eq backend 'html)
@@ -150,5 +150,6 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 (add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
 
 (add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
+
 
 (setq org-export-filter-final-output-functions nil)
