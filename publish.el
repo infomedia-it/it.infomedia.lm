@@ -39,9 +39,10 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
 
-(defvar my-sidenote-map nil)
+;; (defvar my-sidenote-map nil)
+(defvar my-sidenote-map (make-hash-table :test 'equal))
 
-(defun my-org-collect-sidenotes (_backend)
+(defun my-org-collect-sidenotes-old (_backend)
   "Crea una mappa delle sidenotes inline prima dell'export."
   (setq my-sidenote-counter 1)
   (setq my-sidenote-map
