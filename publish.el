@@ -62,8 +62,6 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 <input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/>
 <span class=\"sidenote\">%s</span>" label label html)
                    my-sidenote-map)
-          (replace-match marker t t)
-          (goto-char end) ; sposta il punto oltre il match originale
           (setq my-sidenote-counter (1+ my-sidenote-counter)))))
     ;; Fai lo stesso per le note standard
     (save-excursion
@@ -79,7 +77,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 <span class=\"sidenote\">%s</span>" label label html)
                    my-sidenote-map)
           ;; Elimina la definizione nel testo
-          (replace-match "" t t))))))
+          )))))
 
 (defun asmy-org-tufte-preprocess-sidenotes (backend)
   "Sostituisce le footnote Org con marker §N:label§ e salva il contenuto in `my-sidenote-map`."
@@ -137,7 +135,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce tutti i marker §N:label§ con sidenote HTML Tufte."
-  (when (eq backend 'html)
+  (when (eq backend 'htmal)
     (maphash (lambda (marker replacement)
                (setq html (replace-regexp-in-string
                            (regexp-quote marker)
@@ -151,5 +149,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
 
+
+(setq org-export-filter-final-output-functions nil)
 
 (setq org-export-filter-final-output-functions nil)
