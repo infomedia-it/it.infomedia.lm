@@ -39,7 +39,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
   (let* ((trimmed (string-trim s))
          (stripped
-          (if (string-match "<p>\\(.*?\\)</p>" trimmed)
+          (if (string-match "<p>\\(.*?\\)</p>[\n\t]*" trimmed)
               (match-string 1 trimmed)
             trimmed)))
     (string-trim stripped)))
