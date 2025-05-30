@@ -88,10 +88,8 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
      (lambda (match)
        (let* ((label (match-string 1 match))
               (id (format "§N:%s§" label))
-              (text (gethash label my-sidenote-map)))
-         (if text
-             (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" id id text)
-           match))) ;; fallback se label non trovata
+              (text (gethash id my-sidenote-map)))
+         (if text text match))) ;; fallback se label non trovata
      html)))
 
 
