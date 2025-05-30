@@ -39,7 +39,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
   (let* ((trimmed (string-trim s))
          (stripped
-          (if (string-match "\\`[ \n\t]*<p>\\(.*?\\)</p>[ \n\t]*\\'" trimmed)
+          (if (string-match "<p>\\(.*?\\)</p>" trimmed)
               (match-string 1 trimmed)
             trimmed)))
     (string-trim stripped)))
@@ -62,7 +62,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
                (text (match-string 1))
                (label (format "%d" my-sidenote-counter))
                (marker (format "§N:%d§" my-sidenote-counter))
-               (html (org-export-string-as (string-trim+ text)  'html t))
+               (html (string-trim+ (org-export-string-as text  'html t)))
                (value (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
           (puthash marker value my-sidenote-map)
           (message (format "%s ::: %s" marker value)
