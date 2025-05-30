@@ -35,6 +35,14 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
         (shell-command "git commit -a -m 'step' && git push"))
       (message "✅ Pubblicazione completata."))))
 
+(defun string-trim+ (s)
+  "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
+  (let* ((trimmed (string-trim s))
+         (stripped
+          (if (string-match "\\`[ \n\t]*<p>\\(.*?\\)</p>[ \n\t]*\\'" trimmed)
+              (match-string 1 trimmed)
+            trimmed)))
+    (string-trim stripped)))
 
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
@@ -54,7 +62,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
                (text (match-string 1))
                (label (format "%d" my-sidenote-counter))
                (marker (format "§N:%d§" my-sidenote-counter))
-               (html (org-export-string-as (string-trim text)  'html t))
+               (html (org-export-string-as (string-trim+ text)  'html t))
                (value (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
           (puthash marker value my-sidenote-map)
           (message (format "%s ::: %s" marker value)
@@ -66,7 +74,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
         (let* ((label (match-string 1))
                (text (match-string 2))
                (marker (format "§N:%s§" label))
-               (html (org-export-string-as (string-trim text) 'html t))
+               (html (org-export-string-as (string-trim+ text) 'html t))
                (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
           (puthash marker value my-sidenote-map)
           (message (format "%s ::: %s" marker value)))
