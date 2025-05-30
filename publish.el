@@ -135,14 +135,18 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce tutti i marker §N:label§ con sidenote HTML Tufte."
-  (when (eq backend 'htmal)
-    (maphash (lambda (marker replacement)
-               (setq html (replace-regexp-in-string
-                           (regexp-quote marker)
-                           replacement
-                           html t t)))
-             my-sidenote-map)
-    html))
+  (when (eq backend 'html)
+    (replace-regexp-in-string
+     ;; Regex che trova footnote HTML standard con id "fnr.LABEL"
+     "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
+     (lambda (match)
+       (let* ((label (match-string 1 match))
+              (id (format "sn-%s" label))
+              (text (gethash label my-sidenote-map)))
+         (if text
+             (format "<label for=\"%s\" class=\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" id id text)
+           match))) ;; fallback se label non trovata
+     html)))
 
 
 (add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
