@@ -39,7 +39,6 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
 
-
 (defvar my-sidenote-map nil)
 
 (defun my-org-collect-sidenotes (_backend)
