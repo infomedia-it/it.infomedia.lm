@@ -76,8 +76,9 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
                (marker (format "§N:%s§" label))
                (html (string-trim+ (org-export-string-as text 'html t)))
                (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
-          (puthash marker value my-sidenote-map)
-          (message (format "%s ::: %s" marker value)))))
+                (puthash marker value my-sidenote-map)
+                (setq my-sidenote-counter (1+ my-sidenote-counter))
+                (message (format "%s ::: %s" marker value)))))
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "^\\[fn:\\([^]]+\\)\\] *\\(.*\\)$" nil t)
@@ -88,6 +89,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
                (value (format "<label for=\"%s\" class\"margin-toggle sidenote-number\"></label><input type=\"checkbox\" id=\"%s\" class=\"margin-toggle\"/><span class=\"sidenote\">%s</span>" label label html)))
           (puthash marker value my-sidenote-map)
           (message (format "%s ::: %s" marker value)))
+        (setq my-sidenote-counter (1+ my-sidenote-counter))
           ;; Elimina la definizione nel testo
           )))))
 
