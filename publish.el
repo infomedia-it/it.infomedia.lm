@@ -93,3 +93,25 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (add-hook 'org-export-filter-final-output-functions #'my-org-tufte-sidenote-html-filter)
 (add-hook 'org-export-before-processing-functions #'my-org-tufte-remove-footnote-block)
 
+(setq org-export-before-parsing-hook nil)
+(setq org-export-before-processing-hook nil)
+(setq org-export-after-processing-hook nil)
+
+(setq org-export-before-processing-functions nil)
+(setq org-export-filter-final-output-functions nil)
+(setq org-export-filter-footnote-reference-functions nil)
+(setq org-export-filter-paragraph-functions nil)
+(setq org-export-filter-section-functions nil)
+(setq org-export-filter-headline-functions nil)
+(setq org-export-filter-plain-list-functions nil)
+(setq org-export-filter-item-functions nil)
+(setq org-export-filter-link-functions nil)
+
+
+
+(add-hook 'org-export-before-processing-hook
+          (lambda (backend)
+            (when (eq backend 'html)  ; oppure 'latex, ecc.
+              (goto-char (point-min))
+              (while (search-forward "calce" nil t)
+                (replace-match "mattone" nil t))))
