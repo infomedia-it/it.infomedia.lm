@@ -1,26 +1,6 @@
 (require 'ox-publish)
 
-(setq org-publish-project-alist
-      '(("it.infomedia.lm"
-         :base-directory "~/Dropbox/LIFE/10-projects/10.50 infomedia site/it.infomedia.lm/org"
-         :publishing-directory "~/Dropbox/LIFE/10-projects/10.50 infomedia site/it.infomedia.lm/html"
-         :recursive t
-         :publishing-function org-html-publish-to-html
-         :with-author nil
-         :with-creator nil
-         :with-date nil
-         :section-numbers nil
-         :with-toc nil
-                                        ; ;        :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
-         :html-head "<link rel=\"stylesheet\" href=\"css/theme.css\" />"
-         :html-html5-fancy t
-         :html-validation-link nil
-         :html-postamble nil
-         :html-doctype "html5"
-)))
-
-
-(defun exedre/html-template  (contents info)
+(defun exedre/html-tufte-template  (contents info)
            (concat
             "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
             "<meta charset=\"utf-8\"/>\n"
@@ -37,6 +17,34 @@
             (org-export-data (plist-get info :author) info)
             " – Pubblicazione accademica, esportata da Org Mode con tema Tufte-like.</p></footer>\n"
             "</article>\n</body>\n</html>"))
+
+(org-export-define-derived-backend 'html-tufte 'html
+  :translate-alist '((template . exedre/html-tufte-template)))
+
+(defun exedre/publishing-function (plist filename pub-dir)
+  (org-publish-org-to
+   'html-tufte filename ".html" plist pub-dir))
+
+(setq org-publish-project-alist
+      '(("it.infomedia.lm"
+         :base-directory "~/Dropbox/LIFE/10-projects/10.50 infomedia site/it.infomedia.lm/org"
+         :publishing-directory "~/Dropbox/LIFE/10-projects/10.50 infomedia site/it.infomedia.lm/html"
+         :recursive t
+         ;;:publishing-function org-html-publish-to-html
+         :publishing-function exedre/publishing-function
+         :with-author nil
+         :with-creator nil
+         :with-date nil
+         :section-numbers nil
+         :with-toc nil
+                                        ; ;        :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
+         :html-head "<link rel=\"stylesheet\" href=\"css/theme.css\" />"
+         :html-html5-fancy t
+         :html-validation-link nil
+         :html-postamble nil
+         :html-doctype "html5"
+)))
+
 
 (setq org-html-validation-link nil)
 
