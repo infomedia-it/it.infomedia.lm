@@ -440,13 +440,14 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 <span class=\"sidenote\">%s</span>" id id content))
 
 (defun my-org-export-org-to-html (org-text)
-  "Converte una stringa ORG in HTML, disabilitando i filtri globali temporaneamente."
-  (string-trim
+"Converte una stringa ORG in HTML, disabilitando i filtri globali temporaneamente."
+(save-excursion
+  (string-trim+
    (let ((org-export-filter-final-output-functions nil)
          (org-export-before-processing-hook nil) 
          (org-export-filter-plain-text-functions nil)
          (org-export-filter-paragraph-functions nil))
-     (string-trim+ (org-export-string-as org-text 'html t '(:with-footnotes nil))))))
+     (org-export-string-as org-text 'html t '(:with-footnotes nil))))))
 
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce in HTML tutte le note <sup><a ...> con elementi Tufte-style dalla lista `my-sidenote-list`.
@@ -465,7 +466,9 @@ Le note sono abbinate in ordine di apparizione."
                 (html  (my-org-export-org-to-html text))
                 )
            (setq pos (1+ pos))
-           (or  (my-org-tufte-export-sidenote (or label (format "%d" pos)) text) "[MISSING SIDENOTE]")))  ;; fallback difensivo
+           (or  (my-org-tufte-export-sidenote
+                 (or label (format "%d" pos)) text)
+                "[MISSING SIDENOTE]")))  
        html t t)))))
 
 (add-to-list 'org-export-filter-final-output-functions
