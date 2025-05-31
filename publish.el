@@ -457,7 +457,7 @@ Le note sono abbinate in ordine di apparizione."
           (pos 0)
           (regexp
            ;; trova i riferimenti ai footnote, es: <sup><a id="fnr.1" href="#fn.1">1</a></sup>
-           "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"))
+           "<sup><a id=\"fnr\\.[^\"]+\"[^>]*>[^<]*</a></sup>"))
       (replace-regexp-in-string
        regexp
        (lambda (_match)
