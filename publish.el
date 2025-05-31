@@ -160,7 +160,7 @@ Ogni occorrenza include:
 
 (defun my-org-apply-sidenote-replacements (html backend info)
   "Applica le sostituzioni raccolte in `my-sidenote-replacements` su HTML."
-    (when (eq backend 'html)
+    (when (eq backend 'html-tufte)
       (dolist (pair my-sidenote-replacements (or html ""))
         (setq html (replace-regexp-in-string
                     (regexp-quote (car pair)) (cdr pair) html t t)))))
@@ -179,7 +179,7 @@ _match)
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Non modifica HTML, ma raccoglie tutte le sostituzioni (match . replacement)
 in `my-sidenote-replacements` per successiva applicazione."
-  (when (eq backend 'html)
+  (when (eq backend 'html-tufte)
     (let ((regexp "<sup><a id=\"fnr\\.[^\"]+\"[^>]*>[^<]*</a></sup>"))
       ;; Esegui solo per raccogliere i match; ignora il valore di ritorno
       (ignore
@@ -210,7 +210,7 @@ in `my-sidenote-replacements` per successiva applicazione."
 (defun my-org-tufte-preprocess-sidenotes (backend)
   "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
 Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
-  (when (eq backend 'html)
+  (when (eq backend 'html-tufte)
     (save-excursion
       ;; Inline footnotes: [fn::Testo...]
       (goto-char (point-min))
