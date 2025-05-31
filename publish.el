@@ -58,11 +58,12 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-replacements nil
   "Lista delle coppie (MATCH . REPLACEMENT) trovate da `my-org-tufte-replace-sidenote-markers`.")
 
-(defun my-org-apply-sidenote-replacements (html)
+(defun my-org-apply-sidenote-replacements (html backend info)
   "Applica le sostituzioni raccolte in `my-sidenote-replacements` su HTML."
-  (dolist (pair my-sidenote-replacements html)
-    (setq html (replace-regexp-in-string
-                (regexp-quote (car pair)) (cdr pair) html t t))))
+    (when (eq backend 'html)
+      (dolist (pair my-sidenote-replacements html)
+        (setq html (replace-regexp-in-string
+                    (regexp-quote (car pair)) (cdr pair) html t t)))))
 
 (defun my-org-subst-match (_match)
 "Salva il MATCH e il suo replacement dalla lista `my-sidenote-list` in `my-sidenote-replacements`."
@@ -91,6 +92,9 @@ in `my-sidenote-replacements` per successiva applicazione."
 
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-replace-sidenote-markers)
+
+(add-to-list 'org-export-filter-final-output-functions
+    #'my-org-apply-sidenote-replacements)
 
 
 (defun my-disable-html-footnote-section (_info)
