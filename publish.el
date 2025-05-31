@@ -47,6 +47,14 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-replacements nil
   "Lista delle coppie (MATCH . REPLACEMENT) trovate da `my-org-tufte-replace-sidenote-markers`.")
 
+(defun string-trim+ (s)
+  "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
+  (let* ((trimmed (string-trim s))
+         (stripped (if (string-match "\\`[ \t\n]*<p>\\(.*?\\)</p>[ \t\n]*\\'" trimmed)
+                       (match-string 1 trimmed)
+                     trimmed)))
+    (string-trim stripped)))
+
 
 (defun string-trim+ (s)
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
