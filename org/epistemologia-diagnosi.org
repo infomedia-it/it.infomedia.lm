@@ -1,7 +1,7 @@
 #+TITLE: Epistemologia della diagnosi
 #+AUTHOR: LoginMed
 #+OPTIONS: toc:nil num:nil html-style:nil
-#+HTML_HEAD: <link rel="stylesheet" href="css/tufte.css" />
+# +HTML_HEAD: <link rel="stylesheet" href="css/tufte.css" />
 
 
 E questo fa riferimento a una nota[fn:ricovero].
