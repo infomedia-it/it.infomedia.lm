@@ -13,9 +13,11 @@
          :with-toc nil
          :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
          :html-html5-fancy t
+         :html-validation-link nil
+         :html-postamble nli
          :html-doctype "html5")))
 
-
+(setq org-html-validation-link nil)
 
 (defun it.infomedia.lm-publish (do-push)
   "Esegue org-publish e make publish.
