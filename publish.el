@@ -72,7 +72,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
        (label (plist-get (nth pos notes)  :label))
        (text (org-no-properties (org-element-interpret-data (plist-get (nth pos notes)  :content))))
        (html  (my-org-export-org-to-html text))
-       (ccell  (cons  _match (or  (my-org-tufte-export-sidenote (or label (format "%d" pos)) text) "[MISSING SIDENOTE]"))))
+       (ccell  (cons  _match (or  (my-org-tufte-export-sidenote (or label (format "%d" pos)) html) "[MISSING SIDENOTE]"))))
   (push ccell my-sidenote-replacements))
 _match)
 
