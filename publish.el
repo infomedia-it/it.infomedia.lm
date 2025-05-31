@@ -7,7 +7,8 @@
          :recursive t
          :publishing-function org-html-publish-to-html
          :with-author t
-         :with-creator t
+         :with-creator nil
+         :with-date nil
          :section-numbers nil
          :with-toc nil
          :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
