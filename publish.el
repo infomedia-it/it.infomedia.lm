@@ -26,6 +26,8 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
       (error "Directory base non trovata per il progetto %s" project-name))
     (let ((default-directory (file-name-directory (directory-file-name base-dir))))
       (setq my-sidenote-counter 1)
+      (setq my-sidenote-replacements nil)
+      (setq my-sidenote-list nil)
       (message "📤 Export Org → HTML…")
       (org-publish-project project-name t)
       (message "🛠  make publish…")
