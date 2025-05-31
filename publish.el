@@ -449,6 +449,16 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
          (org-export-filter-paragraph-functions nil))
      (org-export-string-as org-text 'html t '(:with-footnotes nil))))))
 
+(defun my-org-subst-match (_match)
+  (let* ((label (plist-get (nth pos notes)  :label))
+         (text (org-element-interpret-data (plist-get (nth pos notes)  :content)))
+         (html  (my-org-export-org-to-html text))
+         )
+    (setq pos (1+ pos))
+    (or  (my-org-tufte-export-sidenote
+          (or label (format "%d" pos)) text)
+         "[MISSING SIDENOTE]")))
+  
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce in HTML tutte le note <sup><a ...> con elementi Tufte-style dalla lista `my-sidenote-list`.
 Le note sono abbinate in ordine di apparizione."
@@ -460,15 +470,7 @@ Le note sono abbinate in ordine di apparizione."
            "<sup><a id=\"fnr\\.[^\"]+\"[^>]*>[^<]*</a></sup>"))
       (replace-regexp-in-string
        regexp
-       (lambda (_match)
-         (let* ((label (plist-get (nth pos notes)  :label))
-                (text (org-element-interpret-data (plist-get (nth pos notes)  :content)))
-                (html  (my-org-export-org-to-html text))
-                )
-           (setq pos (1+ pos))
-           (or  (my-org-tufte-export-sidenote
-                 (or label (format "%d" pos)) text)
-                "[MISSING SIDENOTE]")))  
+       #'my-org-subst-match
        html t t)))))
 
 (add-to-list 'org-export-filter-final-output-functions
