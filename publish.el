@@ -109,9 +109,23 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (defun org-html-footnote-section (_info) "")
 
-(add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
+;(add-hook 'org-export-before-processing-hook #'my-org-tufte-preprocess-sidenotes)
 
-(add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
+;(add-to-list 'org-export-filter-final-output-functions #'my-org-tufte-replace-sidenote-markers)
 
 ;(setq org-export-filter-final-output-functions nil)
 
+(defun my-org-empty-hooks ()
+  (interactive)
+  (setq org-export-before-parsing-hook nil)
+  (setq org-export-before-processing-hook nil)
+  (setq org-export-after-processing-hook nil)
+  (setq org-export-before-processing-functions nil)
+(setq org-export-filter-final-output-functions nil)
+(setq org-export-filter-footnote-reference-functions nil)
+(setq org-export-filter-paragraph-functions nil)
+(setq org-export-filter-section-functions nil)
+(setq org-export-filter-headline-functions nil)
+(setq org-export-filter-plain-list-functions nil)
+(setq org-export-filter-item-functions nil)
+(setq org-export-filter-link-functions nil))
