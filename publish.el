@@ -1,14 +1,14 @@
 (require 'ox-publish)
 (require 'mustache)
 
-(org-export-to-file 'html-tufte "index.html")
+(setq debug-on-error t)
 
 (org-export-define-derived-backend 'html-tufte 'html
   :translate-alist '((template . exedre/html-template-from-file)))
 
 (defun exedre/html-template-from-file (contents info)
   "Legge un file HTML e sostituisce variabili come {{title}}, poi inserisce CONTENTS."
-  (let* ((plist (plist-get info :publishing-plist))  ;; ← questo c'è sempre
+  (let* ((plist info)  ;; ← questo c'è sempre
          (template-name (or (plist-get plist :template-name) "default"))
          (base-directory (file-name-directory
                           (directory-file-name
@@ -27,7 +27,7 @@
                   ("volume" . ,(or (plist-get info :volume) ""))
                   ("edition" . ,(or (plist-get info :edition) ""))
                   ("subtitle" . ,(or (plist-get info :subtitle) "La vita è tutto un dossier"))
-                  ("content" . ,(mustache-unescaped contents)))))
+                  ("content" . ,contents))))
       (mustache-render template vars))))
 
 
@@ -212,10 +212,6 @@ in `my-sidenote-replacements` per successiva applicazione."
 (advice-add 'org-html-footnote-section :override
             #'my-disable-html-footnote-section)
 
-(my-org-export-org-to-html
- "Una nota con link [[https://example.com][qui]] e un riferimento a nota.")
-
-
 
 (defun my-org-tufte-preprocess-sidenotes (backend)
   "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
@@ -244,4 +240,3 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-replace-sidenote-markers)
 
-(setq debug-on-error nil)
