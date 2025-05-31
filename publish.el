@@ -453,10 +453,12 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 Le note sono abbinate in ordine di apparizione."
   (when (eq backend 'html)
     (let ((notes my-sidenote-list)  ;; lista ordinata dei replacement
-          (pos 0))
+          (pos 0)
+          (regexp
+           ;; trova i riferimenti ai footnote, es: <sup><a id="fnr.1" href="#fn.1">1</a></sup>
+           "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"))
       (replace-regexp-in-string
-       ;; trova i riferimenti ai footnote, es: <sup><a id="fnr.1" href="#fn.1">1</a></sup>
-       "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
+       regexp
        (lambda (_match)
          (let* ((label (plist-get (nth pos notes)  :label))
                 (text (org-element-interpret-data (plist-get (nth pos notes)  :content)))
@@ -464,7 +466,7 @@ Le note sono abbinate in ordine di apparizione."
                 )
            (setq pos (1+ pos))
            (or  (my-org-tufte-export-sidenote (or label (format "%d" pos)) text) "[MISSING SIDENOTE]")))  ;; fallback difensivo
-       html)))))
+       html t t)))))
 
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-replace-sidenote-markers)
