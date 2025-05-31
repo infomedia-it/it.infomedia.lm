@@ -92,11 +92,19 @@ in `my-sidenote-replacements` per successiva applicazione."
       ;; restituisci html invariato
       html)))
 
+(defun my-org-tufte-init (html backend info)
+  (sit-for 2))
+       
+  
 (add-to-list 'org-export-filter-final-output-functions
-    #'my-org-tufte-replace-sidenote-markers)
+    #'my-org-tufte-init)
 
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-apply-sidenote-replacements)
+
+(add-to-list 'org-export-filter-final-output-functions
+    #'my-org-tufte-replace-sidenote-markers)
+
 
 
 (defun my-disable-html-footnote-section (_info)
@@ -123,5 +131,6 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
       ;(my-org-print-footnote-occurrences)
       )))
 
-(add-hook 'org-export-before-processing-hook
-   #'my-org-tufte-preprocess-sidenotes)
+(add-hook
+ 'org-export-before-processing-hook
+ #'my-org-tufte-preprocess-sidenotes)
