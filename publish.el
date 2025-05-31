@@ -65,8 +65,6 @@
          :with-date nil
          :section-numbers nil
          :with-toc nil
-                                        ; ;        :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
-         :html-head "<link rel=\"stylesheet\" href=\"css/theme.css\" />"
          :html-html5-fancy t
          :html-validation-link nil
          :html-postamble nil
