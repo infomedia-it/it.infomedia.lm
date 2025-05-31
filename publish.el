@@ -1,6 +1,8 @@
 (require 'ox-publish)
 (require 'mustache)
 
+(org-export-to-file 'html-tufte "test.html")
+
 (org-export-define-derived-backend 'html-tufte 'html
   :translate-alist '((template . exedre/html-tufte-template-from-file)))
 
