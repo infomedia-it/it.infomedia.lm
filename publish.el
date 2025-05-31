@@ -451,7 +451,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (defun my-org-subst-match (_match)
   (let* ((label (plist-get (nth pos notes)  :label))
-         (text (org-element-interpret-data (plist-get (nth pos notes)  :content)))
+         (text (org-no-properties (org-element-interpret-data (plist-get (nth pos notes)  :content))))
          (html  (my-org-export-org-to-html text))
          )
     (setq pos (1+ pos))
