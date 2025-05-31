@@ -41,10 +41,24 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
 
+(defvar my-sidenote-list nil)
+
+(defvar my-sidenote-replacements nil
+  "Lista delle coppie (MATCH . REPLACEMENT) trovate da `my-org-tufte-replace-sidenote-markers`.")
+
+(defun string-trim+ (s)
+  "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
+  (let* ((trimmed (string-trim s))
+         (stripped
+          (if (string-match "<p>\n*\\(.*?\\)</p>[\n\t]*" trimmed)
+              (match-string 1 trimmed)
+            trimmed)))
+    (string-trim stripped)))
+
 (defun my-org-tufte-export-sidenote (id content)
     (format "<label for=\"sn-%s\" class=\"margin-toggle sidenote-number\"></label>
 <input type=\"checkbox\" id=\"sn-%s\" class=\"margin-toggle\">
-<span class=\"sidenote\">%s</span>" id id content))
+<span class=\"sidenote\">%s</span>" id id  content))
 
 (defun my-org-export-org-to-html (org-text)
 "Converte una stringa ORG in HTML, disabilitando i filtri globali temporaneamente."
@@ -57,8 +71,6 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
      (org-export-string-as org-text 'html t '(:with-footnotes nil))))))
 
 
-(defvar my-sidenote-replacements nil
-  "Lista delle coppie (MATCH . REPLACEMENT) trovate da `my-org-tufte-replace-sidenote-markers`.")
 
 (defun my-org-apply-sidenote-replacements (html backend info)
   "Applica le sostituzioni raccolte in `my-sidenote-replacements` su HTML."
@@ -128,6 +140,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
  #'my-org-tufte-preprocess-sidenotes)
 
 (setq org-export-filter-final-output-functions nil)
+
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-init)
 
@@ -136,3 +149,5 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-replace-sidenote-markers)
+
+(setq debug-on-error t)
