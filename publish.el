@@ -22,7 +22,7 @@
             "</article>\n</body>\n</html>"))
 
 (org-export-define-derived-backend 'html-tufte 'html
-  :translate-alist '((template . exedre/html-tufte-template)))
+  :translate-alist '((template . exedre/html-tufte-template-from-file)))
 
 (defun exedre/html-template-from-file (contents info)
   "Legge un file HTML e sostituisce variabili come {{title}}, poi inserisce CONTENTS."
