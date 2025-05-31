@@ -449,10 +449,11 @@ Le note sono abbinate in ordine di apparizione."
        ;; trova i riferimenti ai footnote, es: <sup><a id="fnr.1" href="#fn.1">1</a></sup>
        "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
        (lambda (_match)
-         (let ((label (plist-get (nth pos notes)  :label))
-               (note (plist-get (nth pos notes)  :content)))
+         (let* ((label (plist-get (nth pos notes)  :label))
+                (text (plist-get (nth pos notes)  :content))
+                (html (string-trim+ (org-export-string-as text 'html t))))
            (setq pos (1+ pos))
-           (or  (my-org-tufte-export-sidenote label note) "[MISSING SIDENOTE]")))  ;; fallback difensivo
+           (or  (my-org-tufte-export-sidenote label html) "[MISSING SIDENOTE]")))  ;; fallback difensivo
        html)))))
 
 (add-to-list 'org-export-filter-final-output-functions
