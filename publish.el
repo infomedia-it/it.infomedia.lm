@@ -10,9 +10,10 @@
          :with-creator t
          :section-numbers nil
          :with-toc nil
-         :html-head "<link rel=\"stylesheet\" href=\"../css/tufte.css\" />"
+         :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />"
          :html-html5-fancy t
          :html-doctype "html5")))
+
 
 
 (defun it.infomedia.lm-publish (do-push)
@@ -46,6 +47,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defvar my-sidenote-replacements nil
   "Lista delle coppie (MATCH . REPLACEMENT) trovate da `my-org-tufte-replace-sidenote-markers`.")
 
+
 (defun string-trim+ (s)
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
   (let* ((trimmed (string-trim s))
@@ -54,6 +56,62 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
               (match-string 1 trimmed)
             trimmed)))
     (string-trim stripped)))
+
+
+(defun my-org-footnote-occurrences ()
+  "Restituisce una lista di tutte le occorrenze di note nel buffer Org.
+Ogni occorrenza include:
+  :label   → etichetta della nota (o nil per note inline anonime)
+  :index   → numero progressivo di apparizione
+  :content → testo della nota (inline o risolto da definizione)"
+  (interactive)
+  (let* ((ast (org-element-parse-buffer))
+         (defs (make-hash-table :test #'equal))
+         (counter 0)
+         (results '()))
+    ;; 1. Costruisci una tabella delle definizioni etichettate
+    (org-element-map ast 'footnote-definition
+      (lambda (fn)
+        (puthash (org-element-property :label fn)
+                 (org-element-interpret-data (org-element-contents fn))
+                 defs)))
+    ;; 2. Raccogli tutte le occorrenze
+    (org-element-map ast 'footnote-reference
+      (lambda (ref)
+        (let* ((label (org-element-property :label ref))
+               (inline (org-element-contents ref))
+               (content
+                (cond
+                 ;; caso inline
+                 ((and (not label) inline)
+                  (org-element-interpret-data inline))
+                 ;; caso label + inline (raro)
+                 ((and label inline)
+                  (org-element-interpret-data inline))
+                 ;; caso label senza inline → cerca nella tabella
+                 ((and label (gethash label defs))
+                  (gethash label defs))
+                 ;; etichetta non risolta
+                 (label (format "[NO DEFINITION for %s]" label))
+                 ;; caso fallback
+                 (t "[UNRESOLVED]"))))
+          (setq counter (1+ counter))
+          (push `(:label ,label :index ,counter :content ,content)
+                results))))
+    (reverse results)))
+
+(defun my-org-print-footnote-occurrences ()
+  "Stampa tutte le occorrenze di note nel buffer corrente Org."
+  (interactive)
+  (let ((notes (my-org-footnote-occurrences)))
+    (with-output-to-temp-buffer "*Footnotes*"
+      (dolist (n notes)
+        (princ (format "[%d] %s%s\n\n"
+                       (plist-get n :index)
+                       (if (plist-get n :label)
+                           (format "[fn:%s] " (plist-get n :label))
+                         "[fn::] ")
+                       (plist-get n :content)))))))
 
 (defun my-org-tufte-export-sidenote (id content)
     (format "<label for=\"sn-%s\" class=\"margin-toggle sidenote-number\"></label>
@@ -75,7 +133,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 (defun my-org-apply-sidenote-replacements (html backend info)
   "Applica le sostituzioni raccolte in `my-sidenote-replacements` su HTML."
     (when (eq backend 'html)
-      (dolist (pair my-sidenote-replacements html)
+      (dolist (pair my-sidenote-replacements (or html ""))
         (setq html (replace-regexp-in-string
                     (regexp-quote (car pair)) (cdr pair) html t t)))))
 
@@ -102,10 +160,11 @@ in `my-sidenote-replacements` per successiva applicazione."
         #'my-org-subst-match
         html t t))
       ;; restituisci html invariato
-      html)))
+      (or html ""))))
 
 (defun my-org-tufte-init (html backend info)
-  (sit-for 2))
+  (sit-for 2)
+  html)
   
 
 
@@ -139,7 +198,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
  'org-export-before-processing-hook
  #'my-org-tufte-preprocess-sidenotes)
 
-(setq org-export-filter-final-output-functions nil)
+; (setq org-export-filter-final-output-functions nil)
 
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-init)
@@ -150,4 +209,4 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 (add-to-list 'org-export-filter-final-output-functions
     #'my-org-tufte-replace-sidenote-markers)
 
-(setq debug-on-error t)
+(setq debug-on-error nil)
