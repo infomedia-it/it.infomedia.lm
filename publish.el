@@ -94,16 +94,8 @@ in `my-sidenote-replacements` per successiva applicazione."
 
 (defun my-org-tufte-init (html backend info)
   (sit-for 2))
-       
   
-(add-to-list 'org-export-filter-final-output-functions
-    #'my-org-tufte-init)
 
-(add-to-list 'org-export-filter-final-output-functions
-    #'my-org-apply-sidenote-replacements)
-
-(add-to-list 'org-export-filter-final-output-functions
-    #'my-org-tufte-replace-sidenote-markers)
 
 
 
@@ -134,3 +126,13 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
 (add-hook
  'org-export-before-processing-hook
  #'my-org-tufte-preprocess-sidenotes)
+
+(setq org-export-filter-final-output-functions nil)
+(add-to-list 'org-export-filter-final-output-functions
+    #'my-org-tufte-init)
+
+(add-to-list 'org-export-filter-final-output-functions
+    #'my-org-apply-sidenote-replacements)
+
+(add-to-list 'org-export-filter-final-output-functions
+    #'my-org-tufte-replace-sidenote-markers)
