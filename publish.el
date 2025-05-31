@@ -35,14 +35,6 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
         (shell-command "git commit -a -m 'step' && git push"))
       (message "✅ Pubblicazione completata."))))
 
-(defun string-trim+ (s)
-  "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
-  (let* ((trimmed (string-trim s))
-         (stripped
-          (if (string-match "<p>\n*\\(.*?\\)</p>[\n\t]*" trimmed)
-              (match-string 1 trimmed)
-            trimmed)))
-    (string-trim stripped)))
 
 (defvar my-sidenote-counter 1
   "Contatore globale per sidenote Tufte.")
@@ -418,6 +410,15 @@ Ogni occorrenza include:
 
 (defvar my-sidenote-list nil)
 
+(defun string-trim+ (s)
+  "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
+  (let* ((trimmed (string-trim s))
+         (stripped
+          (if (string-match "<p>\n*\\(.*?\\)</p>[\n\t]*" trimmed)
+              (match-string 1 trimmed)
+            trimmed)))
+    (string-trim stripped)))
+
 (defun my-org-tufte-preprocess-sidenotes (backend)
   "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
 Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
@@ -453,7 +454,7 @@ Le note sono abbinate in ordine di apparizione."
                 (text (plist-get (nth pos notes)  :content))
                 (html (string-trim+ (org-export-string-as text 'html t))))
            (setq pos (1+ pos))
-           (or  (my-org-tufte-export-sidenote label html) "[MISSING SIDENOTE]")))  ;; fallback difensivo
+           (or  (my-org-tufte-export-sidenote label text) "[MISSING SIDENOTE]")))  ;; fallback difensivo
        html)))))
 
 (add-to-list 'org-export-filter-final-output-functions
