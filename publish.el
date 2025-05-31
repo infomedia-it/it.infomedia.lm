@@ -1,4 +1,5 @@
 (require 'ox-publish)
+(require 'mustache)
 
 (defun exedre/html-tufte-template  (contents info)
            (concat
@@ -23,6 +24,31 @@
 (org-export-define-derived-backend 'html-tufte 'html
   :translate-alist '((template . exedre/html-tufte-template)))
 
+(defun exedre/html-template-from-file (contents info)
+  "Legge un file HTML e sostituisce variabili come {{title}}, poi inserisce CONTENTS."
+  (let* ((project-name (plist-get info :project))
+         (project (assoc project-name org-publish-project-alist))
+         (template-name (or (plist-get (cdr project) :template-name) "default"))
+         (base-directory (file-name-directory
+                          (directory-file-name
+                           (plist-get (cdr project :base-directory)))))
+         (template-path (expand-file-name
+                         (format "themes/%s/base.html" template-name)
+                         base-directory)) ;; oppure altra base directory
+         (template (with-temp-buffer
+                     (insert-file-contents template-path)
+                     (buffer-string)))
+         ;; mappa delle variabili sostituibili
+         (vars `(("title" . ,(org-export-data (plist-get info :title) info))
+                 ("author" . ,(org-export-data (plist-get info :author) info))
+                 ("journal" . ,(or (plist-get info :journal) "e-privacy"))
+                 ("volume" . ,(or (plist-get info :volume) ""))
+                 ("edition" . ,(or (plist-get info :edition) ""))
+                 ("subtitle" . ,(or (plist-get info :subtitle) "La vita è tutto un dossier"))
+                 ("content" . ,(mustache-unescaped contents)))))
+    ;; esegue le sostituzioni
+     (mustache-render template vars)))
+
 (defun exedre/publishing-function (plist filename pub-dir)
   (org-publish-org-to
    'html-tufte filename ".html" plist pub-dir))
@@ -45,6 +71,8 @@
          :html-validation-link nil
          :html-postamble nil
          :html-doctype "html5"
+         :translate-alist '((template . exedre/html-template-from-file))
+         :template-name tufte-theme
 )))
 
 
