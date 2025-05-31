@@ -101,7 +101,25 @@ in `my-sidenote-replacements` per successiva applicazione."
   "Rimuove la sezione delle note a piè di pagina."
   "")
 
-(advice-add 'org-html-footnote-section :override #'my-disable-html-footnote-section)
+(advice-add 'org-html-footnote-section :override
+            #'my-disable-html-footnote-section)
 
 (my-org-export-org-to-html
  "Una nota con link [[https://example.com][qui]] e un riferimento a nota.")
+
+
+
+(defun my-org-tufte-preprocess-sidenotes (backend)
+  "Cerca sidenote inline e standard nel buffer e le salva in `my-sidenote-map`.
+Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
+  (when (eq backend 'html)
+    (save-excursion
+      ;; Inline footnotes: [fn::Testo...]
+      (goto-char (point-min))
+      (setq my-sidenote-list
+            (my-org-footnote-occurrences))
+      ;(my-org-print-footnote-occurrences)
+      )))
+
+(add-hook 'org-export-before-processing-hook
+   #'my-org-tufte-preprocess-sidenotes)
