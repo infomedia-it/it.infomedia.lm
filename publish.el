@@ -52,7 +52,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
   (let* ((trimmed (string-trim s))
          (stripped
-          (if (string-match "<p>\n*\\(.*?\\)</p>[\n\t]*" trimmed)
+          (if (string-match "\\`[ \t\n]*<p>\\(.*?\\)</p>[ \t\n]*\\'" trimmed)
               (match-string 1 trimmed)
             trimmed)))
     (string-trim stripped)))
@@ -164,11 +164,8 @@ in `my-sidenote-replacements` per successiva applicazione."
 
 (defun my-org-tufte-init (html backend info)
   (sit-for 2)
-  html)
+  (or html ""))
   
-
-
-
 
 (defun my-disable-html-footnote-section (_info)
   "Rimuove la sezione delle note a piè di pagina."
