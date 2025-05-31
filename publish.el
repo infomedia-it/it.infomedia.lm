@@ -11,11 +11,30 @@
          :with-date nil
          :section-numbers nil
          :with-toc nil
-         :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
+                                        ; ;        :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
+         :html-head "<link rel=\"stylesheet\" href=\"css/theme.css\" />"
          :html-html5-fancy t
          :html-validation-link nil
          :html-postamble nil
-         :html-doctype "html5")))
+         :html-doctype "html5"
+           :html-template (lambda (contents info)
+           (concat
+            "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
+            "<meta charset=\"utf-8\"/>\n"
+            "<title>" (org-export-data (plist-get info :title) info) "</title>\n"
+            "<link rel=\"stylesheet\" href=\"css/theme.css\"/>\n"
+            "</head>\n<body>\n"
+            "<article>\n<header>\n"
+            "<h1>" (org-export-data (plist-get info :title) info) "</h1>\n"
+            (let ((author (org-export-data (plist-get info :author) info)))
+              (if author (concat "<p class=\"author\">" author "</p>\n") ""))
+            "</header>\n"
+            contents
+            "<footer><hr/><p>© "
+            (org-export-data (plist-get info :author) info)
+            " – Pubblicazione accademica, esportata da Org Mode con tema Tufte-like.</p></footer>\n"
+            "</article>\n</body>\n</html>")))))
+
 
 (setq org-html-validation-link nil)
 
