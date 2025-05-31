@@ -29,8 +29,15 @@
       (mustache-render template vars))))
 
 (defun exedre/publishing-function (plist filename pub-dir)
-  (org-publish-org-to
-   'html-tufte filename ".html" plist pub-dir))
+  (let ((org-export-default-backend 'html-tufte))
+    (org-export-to-file 'html-tufte
+        (concat (file-name-sans-extension filename) ".html")
+      nil nil nil plist pub-dir)))
+
+(defun exedre/publishing-function (plist filename pub-dir)
+  (let ((org-export-current-backend 'html-tufte))
+    (org-publish-org-to 'html-tufte filename ".html" plist pub-dir)))
+
 
 (setq org-publish-project-alist
       '(("it.infomedia.lm"
