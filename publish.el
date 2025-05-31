@@ -49,12 +49,10 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
 
 (defun string-trim+ (s)
   "Rimuove spazi bianchi e tag <p>...</p> attorno a S, se presenti."
-  (let*  ((trimmed (string-trim s))
-         (stripped
-          (if (string-match "\\`[ \t\n]*<p>[ \t\n]*\\(\\(?:.\\|\n\\)*?\\)[ \t\n]*</p>[ \t\n]*\\'" trimmed)
-              (match-string 1 trimmed)
-            trimmed)))
-    stripped))
+  (replace-regexp-in-string
+   "\\`[ \t\n]*<p>[ \t\n]*\\(\\(?:.\\|\n\\)*?\\)[ \t\n]*</p>[ \t\n]*\\'"
+   "\\1"
+   s)))
 
 
 (defun my-org-footnote-occurrences ()
@@ -124,7 +122,7 @@ Ogni occorrenza include:
         (org-export-before-processing-hook nil) 
         (org-export-filter-plain-text-functions nil)
         (org-export-filter-paragraph-functions nil))
-       (string-trim
+       (string-trim+
         (org-export-string-as org-text 'html t
                               '(:with-footnotes nil))))))
 
