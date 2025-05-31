@@ -28,11 +28,6 @@
                   ("content" . ,(mustache-unescaped contents)))))
       (mustache-render template vars))))
 
-(defun exedre/publishing-function (plist filename pub-dir)
-  (let ((org-export-default-backend 'html-tufte))
-    (org-export-to-file 'html-tufte
-        (concat (file-name-sans-extension filename) ".html")
-      nil nil nil plist pub-dir)))
 
 (defun exedre/publishing-function (plist filename pub-dir)
   (let ((org-export-current-backend 'html-tufte))
@@ -55,7 +50,6 @@
          :html-validation-link nil
          :html-postamble nil
          :html-doctype "html5"
-         :translate-alist '((template . exedre/html-template-from-file))
          :template-name tufte-theme
 )))
 
