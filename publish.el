@@ -446,7 +446,7 @@ Ogni nota viene sostituita da un marker univoco §N:label§ nel buffer."
          (org-export-before-processing-hook nil) 
          (org-export-filter-plain-text-functions nil)
          (org-export-filter-paragraph-functions nil))
-     (org-export-string-as org-text 'html t '(:with-footnotes nil)))))
+     (string-trim+ (org-export-string-as org-text 'html t '(:with-footnotes nil))))))
 
 (defun my-org-tufte-replace-sidenote-markers (html backend info)
   "Sostituisce in HTML tutte le note <sup><a ...> con elementi Tufte-style dalla lista `my-sidenote-list`.
@@ -459,11 +459,11 @@ Le note sono abbinate in ordine di apparizione."
        "<sup><a id=\"fnr\\.\\([^\"]+\\)\"[^>]*>[^<]*</a></sup>"
        (lambda (_match)
          (let* ((label (plist-get (nth pos notes)  :label))
-                (text (plist-get (nth pos notes)  :content))
-                ;(html  (my-org-export-org-to-html text))
+                (text (org-element-interpret-data (plist-get (nth pos notes)  :content)))
+                (html  (my-org-export-org-to-html text))
                 )
            (setq pos (1+ pos))
-           (or  (my-org-tufte-export-sidenote label text) "[MISSING SIDENOTE]")))  ;; fallback difensivo
+           (or  (my-org-tufte-export-sidenote (or label (format "%d" pos)) text) "[MISSING SIDENOTE]")))  ;; fallback difensivo
        html)))))
 
 (add-to-list 'org-export-filter-final-output-functions
@@ -475,3 +475,7 @@ Le note sono abbinate in ordine di apparizione."
   "")
 
 (advice-add 'org-html-footnote-section :override #'my-disable-html-footnote-section)
+
+
+(my-org-export-org-to-html
+ "Una nota con link [[https://example.com][qui]] e un riferimento a nota.")
