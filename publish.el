@@ -17,7 +17,10 @@
          :html-validation-link nil
          :html-postamble nil
          :html-doctype "html5"
-           :html-template (lambda (contents info)
+)))
+
+
+(defun exedre/html-template  (contents info)
            (concat
             "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
             "<meta charset=\"utf-8\"/>\n"
@@ -33,8 +36,7 @@
             "<footer><hr/><p>© "
             (org-export-data (plist-get info :author) info)
             " – Pubblicazione accademica, esportata da Org Mode con tema Tufte-like.</p></footer>\n"
-            "</article>\n</body>\n</html>")))))
-
+            "</article>\n</body>\n</html>"))
 
 (setq org-html-validation-link nil)
 
