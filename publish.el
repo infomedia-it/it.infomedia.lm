@@ -10,7 +10,7 @@
          :with-creator t
          :section-numbers nil
          :with-toc nil
-         :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />"
+         :html-head "<link rel=\"stylesheet\" href=\"css/tufte.css\" />\n<link rel=\"stylesheet\" href=\"css/style.css\" />"
          :html-html5-fancy t
          :html-doctype "html5")))
 
@@ -52,7 +52,7 @@ Se chiamata con argomento prefisso (C-u), esegue anche git commit e push."
   (replace-regexp-in-string
    "\\`[ \t\n]*<p>[ \t\n]*\\(\\(?:.\\|\n\\)*?\\)[ \t\n]*</p>[ \t\n]*\\'"
    "\\1"
-   s)))
+   s))
 
 
 (defun my-org-footnote-occurrences ()
